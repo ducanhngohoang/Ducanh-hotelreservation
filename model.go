@@ -4,53 +4,49 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/mysql" //lấy kiểu dữ liệu từ sql
 	jsoniter "github.com/json-iterator/go"
 )
 
-// const SecretKey string = "goldenratio1618"
-
-// type AuthorizationHeader struct {
-// 	Token string `header:"Authorization"`
-// }
-
-// type ErrorMesssage struct {
-// 	Message string `json:"message"`
-// }
-
+//Cities là kiểu dữ liệu thành phố trong Db
 type Cities struct {
-	City_id   int
-	City_name string
-	// City_id   int    `json:"id"`
-	// City_name string `json:"name"`
+	Cityid   int
+	Cityname string
 }
 
+//Rooms là kiểu dữ liệu phòng trong DB
 type Rooms struct {
-	Room_id      int
-	Hotel_id     int
-	Room_type_id int
-	Room_status  int
-	// City_id   int    `json:"id"`
-	// City_name string `json:"name"`
+	Roomid     int
+	Hotelid    int
+	Roomtypeid int
+	Roomstatus int
+	Price 	   string
 }
+
+//Hotels là kiểu dữ liệu khách sạn trong DB
 type Hotels struct {
-	Hotel_id      int
-	Hotel_name    string
-	City_id       int
+	Hotelid       int
+	Hotelname     string
+	Cityid        int
 	Address       string
 	Lat           float32
-	Long          float32
+	Longi         float32
 	Images        string
 	Restaurant    string
 	Events        string
 	Entertainment string
 	Phone         string
 	Email         string
-	Hotel_detail  string
+	Hoteldetail   string
+	Vipprice      string
+	Vvipprice		string
+	Deluxevipprice string
 }
 
+// CreateCityRsp là một struct thêm thành phố thành công
 type CreateCityRsp struct {
 	ResponseTime string `json:"responseTime"`
 	Code         int    `json:"code"`
@@ -58,89 +54,124 @@ type CreateCityRsp struct {
 	Data         Cities `json:"data"`
 }
 
+// CreateHotelRsp là một struct trả về thêm khách sạn thành công
+type CreateHotelRsp struct {
+	ResponseTime string `json:"responseTime"`
+	Code         int    `json:"code"`
+	Message      string `json:"message"`
+	Data         Hotels `json:"data"`
+}
+
+// CreateRoomRsp là một struct trả về thêm phòng thành công
+type CreateRoomRsp struct {
+	ResponseTime string `json:"responseTime"`
+	Code         int    `json:"code"`
+	Message      string `json:"message"`
+	Data         Rooms  `json:"data"`
+}
+
+//CreateBookingInfoRsp là một struct trả về thêm bookinginfo thành công
+type CreateBookingInfoRsp struct {
+	ResponseTime string      `json:"responseTime"`
+	Code         int         `json:"code"`
+	Message      string      `json:"message"`
+	Data         BookingInfo `json:"data"`
+}
+
+// CreateCityReq là một struct thêm thành phố
 type CreateCityReq struct {
-	Id   int    `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-// type UserInfo struct {
-// 	UserType    int    `json:"userType"`
-// 	UserProfile User   `json:"userProfile"`
-// 	Token       string `json:"token"`
+//CreateHotelReq là một struct thêm khách sạn từ yêu cầu json gửi lên
+type CreateHotelReq struct {
+	CityID        int     `json:"cityid"`
+	ID            int     `json:"id"`
+	Name          string  `json:"name"`
+	Address       string  `json:"address"`
+	Lat           float32 `json:"lat"`
+	Longi         float32 `json:"long"`
+	Images        string  `json:"images"`
+	Restaurant    string  `json:"restaurant"`
+	Events        string  `json:"events"`
+	Entertainment string  `json:"entertainment"`
+	Phone         string  `json:"phone"`
+	Email         string  `json:"email"`
+	HotelDetail   string  `json:"detail"`
+	Vipprice         string  `json:"vipprice"`
+	Vvipprice         string  `json:"vvipprice"`
+	Deluxevipprice         string  `json:"deluxevipprice"`
+}
+
+//CreateRoomReq là request tạo phòng mới từ JSON
+type CreateRoomReq struct {
+	RoomID     int `json:"roomID"`
+	HotelID    int `json:"hotelID"`
+	RoomTypeID int `json:"roomtypeID"`
+	RoomStatus int `json:"roomstatus"`
+	Price	   string `json:"price"`
+}
+
+//CreateBookingInfoReq là request tạo Booking mới thành công
+type CreateBookingInfoReq struct {
+	BookingID    int       `json:"bookingID"`
+	HotelID      int       `json:"hotelID"`
+	Startdate    time.Time `json:"startdate"`
+	Enddate      time.Time `json:"enddate"`
+	Roomquantity int       `json:"roomquantity"`
+	Roomtype     int       `json:"roomtype"`
+	Bookingname  string    `json:"bookingname"`
+	Bookingphone string    `json:"bookingphone"`
+}
+
+//Reservedrooms khai báo kiểu dữ liệu thẻ phòng đã đặt trong DB
+type Reservedrooms struct {
+	Roombookedid int
+	Bookingid    int
+	Roomid       int
+	Startdate    time.Time
+	Enddate      time.Time
+	Roomtypeid   int
+	Hotelid      int
+}
+
+//BookingInfo khai báo kiểu bookinginfo
+type BookingInfo struct {
+	Bookingid    int
+	Hotelid      int
+	Startdate    time.Time
+	Enddate      time.Time
+	Roomquantity int
+	Roomtype     int
+	Bookingname  string
+	Bookingphone string
+}
+
+//RequestBooking là struct gửi yêu cầu của khách hàng lên server
+type RequestBooking struct {
+	HotelID      int       `json:"hotelid"`
+	RoomTypeID   int       `json:"roomtypeid"`
+	Startdate    time.Time `json:"startdate"`
+	Enddate      time.Time `json:"enddate"`
+	Roomquantity int       `json:"roomquantity"`
+}
+
+//UnavailableRooms là struct các phòng không khả dụng khi đã có khách đặt từ trước
+type UnavailableRooms struct {
+	RoomID int
+}
+
+// type Message struct {
+// 	Message int
 // }
 
-// type SignupLoginResponse struct {
-// 	ResponseTime string   `json:"responseTime"`
-// 	Code         int      `json:"code"`
-// 	Message      string   `json:"message"`
-// 	Data         UserInfo `json:"data"`
-// }
+//AllRoomsCustomerWant là struct in ra tất cả các phòng phù hợp nhu cầu khách hàng về tên kahchs sạn và loại phòng
+type AllRoomsCustomerWant struct {
+	RoomID int
+}
 
-// type Issue struct {
-// 	ID        string    `json:"id"`
-// 	Title     string    `json:"title"`
-// 	Content   string    `json:"content"`
-// 	Address   string    `json:"address"`
-// 	CreatedAt time.Time `json:"created_at"`
-// 	Status    int       `json:"status"`
-// 	Media     []string  `json:"media"`
-// 	CreatedBy string    `json:"created_by"`
-// }
-
-// type IssueGeneralInfo struct {
-// 	ID      string `json:"id"`
-// 	Status  string `json:"status"`
-// 	Title   string `json:"title"`
-// 	Address string `json:"add"`
-// 	Time    string `json:"time"`
-// 	Date    string `json:"date"`
-// }
-
-// type IssueDetailInfo struct {
-// 	ID      string `json:"id"`
-// 	Status  string `json:"status"`
-// 	Title   string `json:"title"`
-// 	Content string `json:"content"`
-// 	Address string `json:"add"`
-// 	Time    string `json:"time"`
-// 	Date    string `json:"date"`
-// 	Media   string `json:"media"`
-// }
-
-// type IssuesInfo struct {
-// 	ResultCount string             `json:"resultCount"`
-// 	Result      []IssueGeneralInfo `json:"result"`
-// }
-
-// type ListIssues struct {
-// 	ResponseTime string     `json:"responseTime"`
-// 	Code         int        `json:"code"`
-// 	Message      string     `json:"message"`
-// 	Data         IssuesInfo `json:"data"`
-// }
-
-// type IssueDetailRsp struct {
-// 	ResponseTime string          `json:"responseTime"`
-// 	Code         int             `json:"code"`
-// 	Message      string          `json:"message"`
-// 	Data         IssueDetailInfo `json:"data"`
-// }
-
-// type CreateIssueReq struct {
-// 	Title   string   `json:"title"`
-// 	Content string   `json:"content"`
-// 	Address string   `json:"add"`
-// 	Status  int      `json:"status"`
-// 	Media   []string `json:"media"`
-// }
-
-// type CreateIssueRsp struct {
-// 	ResponseTime string `json:"responseTime"`
-// 	Code         int    `json:"code"`
-// 	Message      string `json:"message"`
-// 	Data         Issue  `json:"data"`
-// }
-
+//Config là struct truy nhập vào DB
 type Config struct {
 	Database struct {
 		User     string `json:"user"`
@@ -150,27 +181,12 @@ type Config struct {
 	} `json:"database"`
 }
 
-type ErrorMesssage struct {
+//ErrorMessage là biến mã lỗi trả về
+type ErrorMessage struct {
 	Message string `json:"message"`
 }
 
-// type File struct {
-// 	Id         int       `json:"id"`
-// 	Name       string    `json:"name"`
-// 	Size       int64     `json:"size"`
-// 	Type       string    `json:"type"`
-// 	UploadedAt time.Time `json:"uploaded_at"`
-// 	Url        string    `json:"url"`
-// 	UploadedBy string    `json:"uploaded_by"`
-// }
-
-// type UploadFileResponse struct {
-// 	ResponseTime string `json:"responseTime"`
-// 	Code         int    `json:"code"`
-// 	Message      string `json:"message"`
-// 	Data         string `json:"data"`
-//}
-
+//DecodeDataFromJsonFile đọc dữ liệu từ File JSON
 func DecodeDataFromJsonFile(f *os.File, data interface{}) error {
 	jsonParser := jsoniter.NewDecoder(f)
 	err := jsonParser.Decode(&data)
@@ -181,6 +197,7 @@ func DecodeDataFromJsonFile(f *os.File, data interface{}) error {
 	return nil
 }
 
+//SetupConfig đọc dữ liệu từ config
 func SetupConfig() Config {
 	var conf Config
 
@@ -206,6 +223,7 @@ func SetupConfig() Config {
 	return conf
 }
 
+//ConnectDb kết nối với Database
 func ConnectDb(user string, password string, database string, address string) *gorm.DB {
 	connectionInfo := fmt.Sprintf(`%s:%s@(%s)/%s?charset=utf8&parseTime=True&loc=Local`, user, password, address, database)
 
