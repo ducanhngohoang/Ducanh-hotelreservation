@@ -35,7 +35,7 @@ Cấu trúc và các công cụ được sử dụng của project:
 ## Cấu trúc Database
 Cấu trúc các bảng trong database của project
 
-<img align="right" src="https://https://imgur.com/a/jRLNF5V">
+https://imgur.com/a/jRLNF5V
 
 
 ## Cài đặt
