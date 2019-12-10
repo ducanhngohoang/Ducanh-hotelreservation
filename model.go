@@ -23,26 +23,26 @@ type Rooms struct {
 	Hotelid    int
 	Roomtypeid int
 	Roomstatus int
-	Price 	   string
+	Price      string
 }
 
 //Hotels là kiểu dữ liệu khách sạn trong DB
 type Hotels struct {
-	Hotelid       int
-	Hotelname     string
-	Cityid        int
-	Address       string
-	Lat           float32
-	Longi         float32
-	Images        string
-	Restaurant    string
-	Events        string
-	Entertainment string
-	Phone         string
-	Email         string
-	Hoteldetail   string
-	Vipprice      string
-	Vvipprice		string
+	Hotelid        int
+	Hotelname      string
+	Cityid         int
+	Address        string
+	Lat            float32
+	Longi          float32
+	Images         string
+	Restaurant     string
+	Events         string
+	Entertainment  string
+	Phone          string
+	Email          string
+	Hoteldetail    string
+	Vipprice       string
+	Vvipprice      string
 	Deluxevipprice string
 }
 
@@ -60,6 +60,15 @@ type CreateHotelRsp struct {
 	Code         int    `json:"code"`
 	Message      string `json:"message"`
 	Data         Hotels `json:"data"`
+}
+
+// CreateReservedRoomsRsp trả về biến tạo phòng đã đặt
+
+type CreateReservedRoomsRsp struct {
+	ResponseTime string        `json:"responseTime"`
+	Code         int           `json:"code"`
+	Message      string        `json:"message"`
+	Data         Reservedrooms `json:"data"`
 }
 
 // CreateRoomRsp là một struct trả về thêm phòng thành công
@@ -84,33 +93,44 @@ type CreateCityReq struct {
 	Name string `json:"name"`
 }
 
+// CreateReservedRoomReq là một struct thêm thông tin phòng đặt
+type CreateReservedRoomReq struct {
+	Roombookedid int       `json:"roombookedid"`
+	Bookingid    int       `json:"bookingid"`
+	Roomid       int       `json:"roomid"`
+	Startdate    time.Time `json:"startdate"`
+	Enddate      time.Time `json:"enddate"`
+	Roomtypeid   int       `json:"roomtypeid"`
+	Hotelid      int       `json:"hotelid"`
+}
+
 //CreateHotelReq là một struct thêm khách sạn từ yêu cầu json gửi lên
 type CreateHotelReq struct {
-	CityID        int     `json:"cityid"`
-	ID            int     `json:"id"`
-	Name          string  `json:"name"`
-	Address       string  `json:"address"`
-	Lat           float32 `json:"lat"`
-	Longi         float32 `json:"long"`
-	Images        string  `json:"images"`
-	Restaurant    string  `json:"restaurant"`
-	Events        string  `json:"events"`
-	Entertainment string  `json:"entertainment"`
-	Phone         string  `json:"phone"`
-	Email         string  `json:"email"`
-	HotelDetail   string  `json:"detail"`
-	Vipprice         string  `json:"vipprice"`
-	Vvipprice         string  `json:"vvipprice"`
-	Deluxevipprice         string  `json:"deluxevipprice"`
+	CityID         int     `json:"cityid"`
+	ID             int     `json:"id"`
+	Name           string  `json:"name"`
+	Address        string  `json:"address"`
+	Lat            float32 `json:"lat"`
+	Longi          float32 `json:"long"`
+	Images         string  `json:"images"`
+	Restaurant     string  `json:"restaurant"`
+	Events         string  `json:"events"`
+	Entertainment  string  `json:"entertainment"`
+	Phone          string  `json:"phone"`
+	Email          string  `json:"email"`
+	HotelDetail    string  `json:"detail"`
+	Vipprice       string  `json:"vipprice"`
+	Vvipprice      string  `json:"vvipprice"`
+	Deluxevipprice string  `json:"deluxevipprice"`
 }
 
 //CreateRoomReq là request tạo phòng mới từ JSON
 type CreateRoomReq struct {
-	RoomID     int `json:"roomID"`
-	HotelID    int `json:"hotelID"`
-	RoomTypeID int `json:"roomtypeID"`
-	RoomStatus int `json:"roomstatus"`
-	Price	   string `json:"price"`
+	RoomID     int    `json:"roomID"`
+	HotelID    int    `json:"hotelID"`
+	RoomTypeID int    `json:"roomtypeID"`
+	RoomStatus int    `json:"roomstatus"`
+	Price      string `json:"price"`
 }
 
 //CreateBookingInfoReq là request tạo Booking mới thành công
