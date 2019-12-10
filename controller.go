@@ -282,22 +282,22 @@ func CreateHotels(c *gin.Context) {
 	}
 
 	var HotelInsert = model.Hotels{
-		Hotelid:       createHotel.ID,
-		Hotelname:     createHotel.Name,
-		Cityid:        createHotel.CityID,
-		Address:       createHotel.Address,
-		Lat:           createHotel.Lat,
-		Longi:         createHotel.Longi,
-		Images:        createHotel.Images,
-		Restaurant:    createHotel.Restaurant,
-		Events:        createHotel.Events,
-		Entertainment: createHotel.Entertainment,
-		Phone:         createHotel.Phone,
-		Email:         createHotel.Email,
-		Hoteldetail:   createHotel.HotelDetail,
-		Vipprice:         createHotel.Vipprice,
-		Vvipprice:		createHotel.Vvipprice,
-		Deluxevipprice:	createHotel.Deluxevipprice,
+		Hotelid:        createHotel.ID,
+		Hotelname:      createHotel.Name,
+		Cityid:         createHotel.CityID,
+		Address:        createHotel.Address,
+		Lat:            createHotel.Lat,
+		Longi:          createHotel.Longi,
+		Images:         createHotel.Images,
+		Restaurant:     createHotel.Restaurant,
+		Events:         createHotel.Events,
+		Entertainment:  createHotel.Entertainment,
+		Phone:          createHotel.Phone,
+		Email:          createHotel.Email,
+		Hoteldetail:    createHotel.HotelDetail,
+		Vipprice:       createHotel.Vipprice,
+		Vvipprice:      createHotel.Vvipprice,
+		Deluxevipprice: createHotel.Deluxevipprice,
 	}
 
 	errInsert := db.Table("hotels").Create(&HotelInsert).Error
@@ -364,6 +364,53 @@ func CreateRooms(c *gin.Context) {
 	c.JSON(http.StatusOK, rsp)
 }
 
+//CreateReservedRoom thêm danh sách phòng đã có khách đặt
+func CreateReservedRoom(c *gin.Context) {
+
+	config := model.SetupConfig()
+	db := model.ConnectDb(config.Database.User, config.Database.Password, config.Database.Database, config.Database.Address)
+	defer db.Close()
+	db.LogMode(true)
+
+	var createReservedRoomsInfo model.CreateReservedRoomReq
+	err := c.BindJSON(&createReservedRoomsInfo)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorMessage{
+			Message: "Yêu cầu tạo phòng đặt không hợp lệ",
+		})
+		return
+	}
+
+	var ReservedRoomsInsert = model.Reservedrooms{
+		Roombookedid: createReservedRoomsInfo.Roombookedid,
+		Bookingid:    createReservedRoomsInfo.Bookingid,
+		Roomid:       createReservedRoomsInfo.Roomid,
+		Startdate:    createReservedRoomsInfo.Startdate,
+		Enddate:      createReservedRoomsInfo.Enddate,
+		Roomtypeid:   createReservedRoomsInfo.Roomtypeid,
+		Hotelid:      createReservedRoomsInfo.Hotelid,
+	}
+
+	errInsert := db.Table("reservedrooms").Create(&ReservedRoomsInsert).Error
+	if errInsert != nil {
+		log.Println(errInsert)
+		c.JSON(http.StatusBadRequest, model.ErrorMessage{
+			Message: "Yêu cầu tạo phòng đặt không hợp lệ",
+		})
+		return
+	}
+
+	var rsp = model.CreateReservedRoomsRsp{
+		ResponseTime: time.Now().String(),
+		Code:         0,
+		Message:      "Tạo các phòng đã đặt thành công",
+		Data:         ReservedRoomsInsert,
+	}
+
+	c.JSON(http.StatusOK, rsp)
+}
+
 //DeleteCity là thêm tinh nang delete
 func DeleteCity(c *gin.Context) {
 	config := model.SetupConfig()
@@ -397,6 +444,8 @@ func DeleteCity(c *gin.Context) {
 
 	defer db.Close()
 }
+
+
 
 //ProcessingCustomerRequest là tính năng trả về số phòng khách có thể đặt được theo yêu cầu tên khách sạn, loại phòng, và ngày giờ đặt.
 func ProcessingCustomerRequest(c *gin.Context) {
