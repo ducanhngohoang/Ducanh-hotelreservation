@@ -30,13 +30,14 @@ func main() {
 	r.GET("/getallhotels", controller.GetAllHotels)
 	r.GET("/getBookingByPhone", controller.GetBookingByPhone)
 	r.GET("/getAllBooking", controller.GetAllBooking)
+	r.GET("/getRoomsByBookingID", controller.GetRoomBookedByBookingID)
 	r.POST("/create-city", controller.CreateCities)
 	r.POST("/create-hotel", controller.CreateHotels)
 	r.POST("/create-rooms", controller.CreateRooms)
 	r.POST("/create-bookinginfo", controller.CreateBookingInfo)
 	r.DELETE("/deletecity", controller.DeleteCity)
 	r.POST("/availaberooms", controller.ProcessingCustomerRequest)
-	r.GET("/getRoomsByBookingID", controller.GetRoomBookedByBookingID)
+	r.POST("/create-reservedrooms", controller.CreateReservedRoom)
 	r.Run(":8086")
 
 }
